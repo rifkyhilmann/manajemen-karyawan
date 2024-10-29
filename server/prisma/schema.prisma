@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusAbsensi {
+  HADIR
+  SAKIT
+  CUTI
+  IZIN
+  ALFA
+}
+
+
+model Karyawan {
+  id         Int      @id @default(autoincrement())
+  nip        String   @unique
+  name       String
+  password   String
+  alamat     String?
+  no_hp      String?
+  email      String   @unique
+  jabatan    Jabatan? @relation(fields: [jabatanId], references: [id])
+  jabatanId  Int?
+  absensi    Absensi[]
+  cuti       Cuti[]
+  image      String?
+   token      String?
+  createdAt  DateTime @default(now())
+
+  @@map("karyawan")
+}
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  name     String
+  password String
+  email    String   @unique
+  no_hp    String?
+  image    String?
+  token      String?
+  
+  @@map("admin")
+}
+
+model Keuangan {
+  id       Int      @id @default(autoincrement())
+  name     String
+  password String
+  no_hp    String?
+  image    String?
+  token      String?
+
+  @@map("keuangan")
+}
+
+model Jabatan {
+  id          Int        @id @default(autoincrement())
+  nama_jabatan String
+  gaji_per_hari Float
+
+  karyawan Karyawan[]
+
+  @@map("jabatan")
+}
+
+model Absensi {
+  id          Int      @id @default(autoincrement())
+  karyawanId  Int
+  tanggal     DateTime
+  status      StatusAbsensi @default(ALFA)
+  jam_masuk   DateTime?
+  jam_keluar  DateTime?
+  keterangan  String?
+
+  karyawan Karyawan @relation(fields: [karyawanId], references: [id])
+
+  @@map("absensi")
+}
+
+model Cuti {
+  id             Int      @id @default(autoincrement())
+  karyawanId     Int
+  tanggal_mulai  DateTime
+  tanggal_selesai DateTime
+  jenis_cuti     String   // Gunakan ENUM jika ingin membatasi jenis cuti
+  status         String   // Gunakan ENUM jika ingin membatasi status
+  keterangan     String?
+
+  karyawan Karyawan @relation(fields: [karyawanId], references: [id])
+
+  @@map("cuti")
+}

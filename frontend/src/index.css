@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.form-login {
+  background-image: url('./assets/bg.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
