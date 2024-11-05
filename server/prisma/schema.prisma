@@ -17,7 +17,7 @@ enum StatusAbsensi {
 
 
 model Karyawan {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid()) @unique
   nip        String   @unique
   name       String
   password   String
@@ -36,7 +36,7 @@ model Karyawan {
 }
 
 model Admin {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(uuid()) @unique
   name     String
   password String
   email    String   @unique
@@ -70,7 +70,7 @@ model Jabatan {
 
 model Absensi {
   id          Int      @id @default(autoincrement())
-  karyawanId  Int
+  karyawanId  String
   tanggal     DateTime
   status      StatusAbsensi @default(ALFA)
   jam_masuk   DateTime?
@@ -84,14 +84,20 @@ model Absensi {
 
 model Cuti {
   id             Int      @id @default(autoincrement())
-  karyawanId     Int
+  karyawanId     String
   tanggal_mulai  DateTime
   tanggal_selesai DateTime
   jenis_cuti     String   // Gunakan ENUM jika ingin membatasi jenis cuti
-  status         String   // Gunakan ENUM jika ingin membatasi status
+  status          StatusCuti @default(PENDING)
   keterangan     String?
 
   karyawan Karyawan @relation(fields: [karyawanId], references: [id])
 
   @@map("cuti")
+}
+
+enum StatusCuti {
+  PENDING
+  APPROVED
+  REJECTED
 }

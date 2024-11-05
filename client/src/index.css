@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.sidebar-active {
+    display: none;
+}
+.table-container {
+    max-height: 550px; /* Atur tinggi maksimum sesuai kebutuhan */
+    overflow-y: auto; /* Scroll vertikal */
+    overflow-x: auto; /* Scroll horizontal */
+}
+
+.transparent {
+    background-color: rgba(255, 255, 255, 0.247);
+}
+
+.modals {
+    background-color: rgba(0, 0, 0, 0.342);
+}
+
+@media (min-width: 0px) and (max-width: 768px) {
+    .sidebar-container {
+        display: none;
+    }
+    .content {
+        width: 100%;
+        margin-left: 0px;
+    }
+    .sidebar-active{
+        display: flex;
+        position: fixed;
+    }
+}
