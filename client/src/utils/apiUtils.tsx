@@ -38,7 +38,7 @@ export const GetData = async (api : any) => {
         return response
     } catch (error) {
         console.log(error)
-        alert("Gagal Fetching data karyawan")        
+        throw error; 
     }
 }
 

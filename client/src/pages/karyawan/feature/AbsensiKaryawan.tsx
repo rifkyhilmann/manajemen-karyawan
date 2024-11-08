@@ -31,7 +31,7 @@ export const AbensiKaryawan = () => {
             const response = await GetData(`absensi/${email}`);
             setData(response?.data.data)
         } catch (error) {
-            
+            console.log(error)
         }
     }
 
@@ -40,7 +40,7 @@ export const AbensiKaryawan = () => {
     }, [email])
 
     const columns:GridColDef<RowData>[] = [
-        { field: 'name', headerName: 'name', flex : 1 },
+        { field: 'name', headerName: 'Name', flex : 1 },
         { field: 'tanggal', headerName: 'Tanggal', flex : 1 },
         { field: 'jam_masuk', headerName: 'Jam Masuk', flex : 1 },
         { field: 'jam_keluar', headerName: 'Jam Keluar', flex : 1 },

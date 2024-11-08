@@ -29,7 +29,7 @@ model Karyawan {
   absensi    Absensi[]
   cuti       Cuti[]
   image      String?
-   token      String?
+  token      String?
   createdAt  DateTime @default(now())
 
   @@map("karyawan")
@@ -77,7 +77,7 @@ model Absensi {
   jam_keluar  DateTime?
   keterangan  String?
 
-  karyawan Karyawan @relation(fields: [karyawanId], references: [id])
+  karyawan   Karyawan @relation(fields: [karyawanId], references: [id], onDelete: Cascade)
 
   @@map("absensi")
 }
@@ -91,7 +91,7 @@ model Cuti {
   status          StatusCuti @default(PENDING)
   keterangan     String?
 
-  karyawan Karyawan @relation(fields: [karyawanId], references: [id])
+   karyawan   Karyawan @relation(fields: [karyawanId], references: [id], onDelete: Cascade)
 
   @@map("cuti")
 }

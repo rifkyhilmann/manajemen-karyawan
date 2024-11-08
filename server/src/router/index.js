@@ -4,7 +4,7 @@ const { CreateKaryawan, DeleteKaryawan, UpdateKaryawan, GetAllKaryawan, GetKarya
 const router = express.Router();
 const upload = require('../middlewares/multerConfig');
 const { Loginkaryawan, LoginAdmin } = require('./action/login');
-const { AbsensiMasuk, AbsensiPulang, GetAllAbsensi, GetAbsensiWhereEmail } = require('./action/absensi');
+const { AbsensiMasuk, AbsensiPulang, GetAllAbsensi, GetAbsensiWhereEmail, GetCountAbsensi, CheckAbsensi } = require('./action/absensi');
 const { CreateAdmin, GetAdminByEmail } = require('./action/admin');
 const { CountKaryawan } = require('./action/count');
 const { CreeateCuti, GetAllCuti, ApproveCuti, RejectedCuti, GetCutiWhereEmail } = require('./action/ajuanCuti');
@@ -21,6 +21,8 @@ router.get('/cuti', GetAllCuti)
 router.get('/cuti/:email', GetCutiWhereEmail)
 router.get('/count', GetCount);
 router.get('/absensi/:email', GetAbsensiWhereEmail)
+router.get('/status-absensi/:karyawanId', GetCountAbsensi)
+router.get('/absensi/today-status/:karyawanId', CheckAbsensi)
 
 router.post('/jabatan', CreateJabatan);
 router.post('/karyawan', upload.single('image'), CreateKaryawan);
@@ -34,7 +36,7 @@ router.post('/cuti/approve/:idCuti', ApproveCuti);
 router.post('/cuti/rejected/:idCuti', RejectedCuti);
 
 router.put('/jabatan/:id', UpdateJabatan);
-router.put('/karyawan/:id', UpdateKaryawan);
+router.put('/karyawan/:id', upload.single('image'), UpdateKaryawan);
 
 router.delete('/jabatan/:id', DeleteJabatan);
 router.delete('/karyawan/:id', DeleteKaryawan);

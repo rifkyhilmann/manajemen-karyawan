@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { logout } from "../../redux/reducers/authReducers"
 import { IconsProfile } from '../../assets';
 import { RootState } from '../../redux/store';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 
 interface pageProps {
     isActive : boolean;
@@ -28,7 +29,7 @@ export const SidebarKaryawan:React.FC<pageProps> = ({isActive}) => {
                 <div className="h-10 w-10 bg-blue-500 rounded-lg flex items-center justify-center">
                     <img src={Logo} alt="" className="h-8 w-8" />
                 </div>
-                <p className="text-2xl text-blue-500 font-semibold font-pridi">Akses Digital</p>
+                <p className="text-3xl text-blue-500 font-semibold font-pridi">PT.Curaweda</p>
             </div>
             <div className='h-max flex flex-col gap-4 w-full items-center justify-center py-1'>
                 <img 
@@ -63,9 +64,14 @@ export const SidebarKaryawan:React.FC<pageProps> = ({isActive}) => {
                         icons={faFile}
                         url='/karyawan/cuti'
                     />
+                    <MenuSidebar 
+                        title='Profile'
+                        icons={faUser}
+                        url='/karyawan/profile'
+                    />
                     <div 
                         onClick={handleSignOut}
-                        className="h-10 w-full rounded flex items-center cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
+                        className="h-10 w-full rounded flex items-center cursor-pointer hover:bg-custom-gradient hover:text-white transition-all">
                         <div className="h-max w-5 mx-3 flex items-center justify-center" >
                              <FontAwesomeIcon icon={faSignOut} className="text-lg" />
                         </div>

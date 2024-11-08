@@ -118,17 +118,34 @@ exports.UpdateKaryawan = async (req, res) => {
     }
 
     try {
+        // Mencari karyawan berdasarkan ID dan memperbarui datanya
         const karyawan = await prisma.karyawan.update({
-            where: { id }, // Mencari karyawan berdasarkan email
+            where: { id }, // Mencari karyawan berdasarkan ID
             data: updateData, // Menggunakan data yang sudah disiapkan
+            include: { // Termasuk data jabatan dalam hasil
+                jabatan: true,
+            }
         });
 
-        res.status(200).send("Success");
+        if (!karyawan) {
+            console.log("Update gagal: karyawan tidak ditemukan");
+            return res.status(404).send('Karyawan tidak ditemukan');
+        }
+
+        // Ubah struktur data untuk mencocokkan dengan struktur pada GetKaryawanByEmail
+        const karyawanWithJabatan = {
+            ...karyawan,
+            jabatan: karyawan.jabatan?.nama_jabatan || 'Tidak Ada', // Mengubah jabatan menjadi string
+        };
+
+        // Mengembalikan data yang sudah dipetakan
+        res.status(200).json(karyawanWithJabatan);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Terjadi kesalahan saat memperbarui karyawan' });
     }
 };
+
 
 exports.GetAllKaryawan = async (req, res) => {
     try {

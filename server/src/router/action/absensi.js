@@ -23,7 +23,7 @@ exports.AbsensiMasuk = async (req, res) => {
                 },
             });
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Absensi masuk berhasil dicatat',
             });
         } else {
@@ -39,7 +39,6 @@ exports.AbsensiMasuk = async (req, res) => {
         });
     }
 }
-
 // Fungsi untuk mencatat absensi pulang
 exports.AbsensiPulang = async (req, res) => {
     const { karyawanId } = req.params; // Ambil ID karyawan dari body request
@@ -82,7 +81,6 @@ exports.AbsensiPulang = async (req, res) => {
         });
     }
 };
-
 exports.GetAllAbsensi = async (req, res) => {
     try {
         const absensi = await prisma.absensi.findMany({
@@ -178,3 +176,129 @@ const formatTime = (timeString) => {
     const options = { hour: '2-digit', minute: '2-digit', hour12: false };
     return new Date(timeString).toLocaleTimeString('id-ID', options);
 }
+
+const getMonth = () => {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
+    return `${month}/${year}`
+}
+
+exports.GetCountAbsensi = async (req, res) => {
+    const { karyawanId } = req.params;  
+
+    try {
+        const today = new Date();
+        const month = today.getMonth() + 1;  
+        const year = today.getFullYear();    
+
+        const startOfMonth = new Date(year, month - 1, 1);  
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const endOfMonth = new Date(year, month, 0); 
+        endOfMonth.setHours(23, 59, 59, 999);  
+
+        const result = await prisma.absensi.findMany({
+            where: {
+                tanggal: {
+                    gte: startOfMonth,  
+                    lte: endOfMonth,    
+                },
+                karyawanId : karyawanId
+            }
+        });
+
+        const status = {
+            HADIR : 0,
+            SAKIT : 0,
+            CUTI : 0,
+            IZIN : 0,
+            ALFA : 0,
+        }
+
+        result.forEach(item => {
+            if(item.status === "HADIR") {
+                status.HADIR++;
+            } else if(item.status === "SAKIT") {
+                status.SAKIT++;
+            } else if (item.status === "CUTI") {
+                status.CUTI++;
+            } else if (item.status === "IZIN") {
+                status.IZIN++;
+            } else if (item.status === "ALFA") {
+                status.ALFA++
+            }
+        })
+
+        const statusArray = Object.keys(status).map(key => ({
+            status: key,
+            jumlah: status[key]
+        }));
+      
+        res.status(200).json({
+            message: "success",
+            data: statusArray
+        });
+        
+    } catch (error) {
+        console.error(error);  
+        res.status(500).send({ message: "Internal server error" });
+    }
+};
+
+exports.CheckAbsensi = async (req, res) => {
+    const { karyawanId } = req.params;
+    const today = new Date();
+
+    // Format tanggal tanpa waktu (hanya tanggal)
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Awal hari: 2024-11-06 00:00:00
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // Akhir hari: 2024-11-06 23:59:59
+
+    try {
+        const result = await prisma.absensi.findMany({
+            where: {
+                karyawanId: karyawanId,
+                tanggal: {
+                    gte: startOfDay, // Pencarian absensi yang dimulai dari tengah malam
+                    lt: endOfDay,    // Pencarian absensi yang berakhir sebelum tengah malam hari berikutnya
+                }
+            }
+        });
+
+
+        const absensi = {
+            masuk: false, 
+            pulang: false, 
+            status: "", // Status default kosong
+        };
+
+        // Jika ada data absensi, kita periksa apakah jam masuk dan keluar ada
+        result.forEach((entry) => {
+            if (entry.jam_masuk && entry.jam_masuk !== "") {
+                absensi.masuk = true;  // Menandakan sudah absensi masuk
+            }
+
+            if (entry.jam_keluar && entry.jam_keluar !== "") {
+                absensi.pulang = true;  // Menandakan sudah absensi keluar
+            }
+
+            // Jika ada field status, kita ambil statusnya
+            if (entry.status) {
+                absensi.status = entry.status;  // Mengambil status dari entri
+            }
+        });
+
+        // Kirimkan status absensi
+        res.status(200).json({
+            message: "success",
+            data: absensi
+        });
+
+    } catch (error) {
+        console.error("Error checking absensi:", error);
+        res.status(500).json({
+            message: "Error checking absensi",
+            error: error.message,
+        });
+    }
+};
